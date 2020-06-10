@@ -13,8 +13,6 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.18",
     "nodemon": "^2.0.4",
-    "strip-bom": "^4.0.0",
-    "strip-bom-buf": "^2.0.0",
     "winston": "^3.2.1"
   }
 }

@@ -1,3 +1,4 @@
+const winston = require('winston')
 const fs = require('fs')
 const { StringDecoder } = require('string_decoder');
 const decoder = new StringDecoder('utf-8')
@@ -8,9 +9,6 @@ const express = require('express');
 const app = express();
 
 const asyncErrorHandler = require('./utils/asyncErrorHandler');
-
-const stripBomBuffer = require('strip-bom-buf');
-const stripBom = require('strip-bom');
 
 const mongoose = require('mongoose');
 // asyncErrorHandler
@@ -51,29 +49,11 @@ app.post('', asyncErrorHandler((async (req, res, next) => {
     throw new Error('Error occured')
 })))
 
+
 app.get('/errors', (req, res) => {
-    let str = fs.readFileSync('./error.txt')
-    res.send(str.toString().split('}'))
-    // fs.readFile('./error.log', (err, buf) => {
-    //     console.log(err)
-    //     let str = "{'a':'b'} {'c':'d'}"
-    //     let errors = buf.toString().replace("\\n", '').replace('{', '').split('}')
-    //     for (let i = 0; i < errors.length; i++) {
-    //         for (let j = 0; j < errors[i].length; j++) {
-    //             // console.log(errors[i][j])
-    //             if (errors[i][j] === '\\') {
-    //                 errors[i][j] = 'a'
-    //                 console.log(errors[i][j])
-    //             }
-    //         }
-    //     }
-    //     res.send(errors)
-    // })
-
-
-    // res.json(errors.toString('utf-8'))
-    // res.send(JSON.parse(new String(errors.toStrisng('utf-8')).toString()))
-    // res.send(JSON.stringify(errors));
+    let str = fs.readFileSync('./error.json')
+    let strCopy = str.toString()
+    res.send(strCopy)
 })
 app.use(require('./middleware/globalError'));
 

@@ -1,16 +1,21 @@
 const winston = require('winston')
 const NODE_ENV = process.env.NODE_ENV;
+
 const logger = winston.createLogger({
-    level: 'info',
+    level: 'error',
     format: winston.format.combine(
-        winston.format.json(),
         winston.format.timestamp(),
-        // winston.format.prettyPrint()
+        winston.format.json()
+        
+        // winston.format.splat(),
+        // winston.format.simple()
+        // wi nston.format.prettyPrint()
+        
     ),
     defaultMeta: { service: 'user-service' },
 
     transports: [
-        new winston.transports.File({ filename: 'error.txt', level: 'info' }),
+        new winston.transports.File({ filename: 'error.json', level: 'error' }),
         new winston.transports.File({ filename: 'combined.log' })
     ]
 })
