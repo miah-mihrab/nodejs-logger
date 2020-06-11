@@ -6,17 +6,16 @@ const logger = winston.createLogger({
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
-        
+
         // winston.format.splat(),
         // winston.format.simple()
-        // wi nston.format.prettyPrint()
-        
+        // winston.format.prettyPrint()
+
     ),
-    defaultMeta: { service: 'user-service' },
+    // defaultMeta: { service: 'user-service' },
 
     transports: [
-        new winston.transports.File({ filename: 'error.json', level: 'error' }),
-        new winston.transports.File({ filename: 'combined.log' })
+        new winston.transports.File({ filename: 'error.json', level: 'error' })
     ]
 })
 

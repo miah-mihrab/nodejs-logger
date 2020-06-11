@@ -1,7 +1,19 @@
-let str = `{"service": "user-service", "level": "error", "message": "Something went wrong on startup", "stack": "Error: Something went wrong on startup \ n at Object.(C: \\ Users \\ Kingdel \\ Desktop \\ workspace \ logger \\ app.js: 38: 7) \ n at Module._compile (internal / modules / cjs / loader.js: 1138: 30) \ n at Object.Module._extensions..js (internal / modules / cjs / loader.js: 1158: 10) \ n at Module.load (internal / modules / cjs / loader.js: 986: 32) \ n at Function .Module._load (internal / modules / cjs / loader.js: 879: 14) \ n at Function.executeUserEntryPoint [as runMain] (internal / modules / run_main.js: 71: 12) \ n at internal / main / run_main_module .js: 17: 47 "," timestamp ":" 2020-06-10T10: 52: 02.885Z "} {" service ":" user-service "," level ":" error "," message ":" Something went wrong on startup "," stack ":" Error: Something went wrong on startup \ n at Object.(C: \\ Users \\ Kingdel \\ Desktop \\ workspace \ logger \\ app.js: 38: 7) \ n at Module._compile (internal / modules / cjs / loader.js: 1138: 30) \ n at Object.Module._extensions..js (internal / modules / cjs / loader.js: 1158: 10) \ n at Module.load (internal / modules / cjs / loader.js: 986: 32) \ n at Function .Module._load (internal / modules / cjs / loader.js: 879: 14) \ n at Function.executeUserEntryPoint [as runMain] (internal / modules / run_main.js: 71: 12) \ n at internal / main / run_main_module .js: 17: 47 "," timestamp ":" 2020-06-10T10: 52: 03.802Z "} {" service ":" user-service "," level ":" error "," message ":" Something went wrong on startup "," stack ":" Error: Something went wrong on startup \ n at Object.(C: \\ Users \\ Kingdel \\ Desktop \\ workspace \ logger \\ app.js: 38: 7) \ n at Module._compile (internal / modules / cjs / loader.js: 1138: 30) \ n at Object.Module._extensions..js (internal / modules / cjs / loader.js: 1158: 10) \ n at Module.load (internal / modules / cjs / loader.js: 986: 32) \ n at Function .Module._load (internal / modules / cjs / loader.js: 879: 14) \ n at Function.executeUserEntryPoint [as runMain] (internal / modules / run_main.js: 71: 12) \ n at internal / main / run_main_module js: 17: 47 "," timestamp "," 2020-06-10T10: 52: 04.777Z "}
-`
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-let arr =str.trim().split('}').reverse()
-//  str.replace('}', '}\n')
-arr.splice(0,1)
-console.log(arr)
+let words = ['abc', 'defg', 'hij', 'klmno'];
+// console.log(words.length, Math.ceil(Math.random() * words.length))
+
+let word = words[Math.ceil(Math.random() * words.length)]
+console.log(word, word.length)
+let dash = '';
+for (let i = 0; i < word.length; i++) {
+    dash += '-'
+    if (i === word.length - 1) console.log(dash)
+}
+
+readline.question(`Guess character of the word: `, character => {
+
+})

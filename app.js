@@ -3,13 +3,14 @@ const fs = require('fs')
 const { StringDecoder } = require('string_decoder');
 const decoder = new StringDecoder('utf-8')
 const logger = require('./utils/logger');
-
+const cors = require('cors')
 const express = require('express');
 
 const app = express();
 
 const asyncErrorHandler = require('./utils/asyncErrorHandler');
-
+const exphbs = require('express-handlebars')
+app.use(cors('*'))
 const mongoose = require('mongoose');
 // asyncErrorHandler
 // mongoose.connect('mongodb://127.0.0.1:27017/logger', { useNewUrlParser: true, useUnifiedTopology: true }, (err, resp) => {
@@ -33,6 +34,15 @@ process.on('unhandledRejection', (exp) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+//Set View Engine
+app.engine(
+    "handlebars",
+    exphbs({
+        defaultLayout: "main"
+    })
+);
+app.set("view engine", "handlebars");
+app.use(express.static("public"));
 
 // Unhandled exception
 // throw new Error("Something went wrong on startup")
@@ -52,9 +62,16 @@ app.post('', asyncErrorHandler((async (req, res, next) => {
 
 app.get('/errors', (req, res) => {
     let str = fs.readFileSync('./error.json')
-    let strCopy = str.toString()
-    res.send(strCopy)
-})
+    let err = str.toString()
+    // console.log(strCopy)
+    res.send(err)
+    // res.render('errors', { errors: err })
+
+    //res.send(strCopy)
+});
+// app.get('/errors-log', (req, res) => {
+//     res.render('errors')
+// })
 app.use(require('./middleware/globalError'));
 
 app.listen(8080, console.log("Server up and running"));
