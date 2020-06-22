@@ -1,17 +1,16 @@
-const winston = require('winston')
 const fs = require('fs')
-const { StringDecoder } = require('string_decoder');
-const decoder = new StringDecoder('utf-8')
 const logger = require('./utils/logger');
 const cors = require('cors')
 const express = require('express');
-
 const app = express();
-
 const asyncErrorHandler = require('./utils/asyncErrorHandler');
-const exphbs = require('express-handlebars')
-app.use(cors('*'))
 const mongoose = require('mongoose');
+const moment = require('moment');
+const handlers = require('./utils/handlers');
+app.use(cors('*'))
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }))
 // asyncErrorHandler
 // mongoose.connect('mongodb://127.0.0.1:27017/logger', { useNewUrlParser: true, useUnifiedTopology: true }, (err, resp) => {
 //     console.log(err)
@@ -22,26 +21,40 @@ const mongoose = require('mongoose');
 // const kitty = new Cat({ name: 'Zildjian' });
 // asyncErrorHandler((kitty.save().then(() => console.log('meow'))));
 
+
 // ERRORS
-process.on('uncaughtException', (exp) => {
-    logger.error('', exp);
+process.on('uncaughtException', (exception) => {
+    let err = {};
+    err['errorMessage'] = exception.message + "(UncaughtException)";
+    err['stackTrace'] = exception.stack;
+    err['timestamp'] = moment().format('MMMM Do YYYY, h:mm:ss a')
+    if (!fs.existsSync('error.log')) {
+        fs.writeFile('error.log');
+    }
+    fs.appendFile('error.log', `${Buffer.from(JSON.stringify(err)).toString('base64')}, `, (err) => {
+        if (!err) console.log('saved');
+    })
+
+
 })
-process.on('unhandledRejection', (exp) => {
-    logger.error('', exp)
+process.on('unhandledRejection', (exception) => {
+    let err = {};
+    err['errorMessage'] = exception.message + "(UnhandledRejection)";
+    err['stackTrace'] = exception.stack;
+    err['timestamp'] = moment().format('MMMM Do YYYY, h:mm:ss a')
+    if (!fs.existsSync('error.log')) {
+        fs.writeFile('error.log');
+    }
+    fs.appendFile('error.log', `${Buffer.from(JSON.stringify(err)).toString('base64')}, `, (err) => {
+        if (!err) console.log('saved');
+    })
 })
 // ERRORS END
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//Set View Engine
-app.engine(
-    "handlebars",
-    exphbs({
-        defaultLayout: "main"
-    })
-);
-app.set("view engine", "handlebars");
 app.use(express.static("public"));
 
 // Unhandled exception
@@ -52,7 +65,7 @@ app.use(express.static("public"));
 // promiseTest.then(() => console.log('done'))
 
 app.get('', (req, res, next) => {
-    res.send("Working")
+    handlers({ level: 'warning', errorMessage: 'This is a warning' }, req, res);
 })
 
 app.post('', asyncErrorHandler((async (req, res, next) => {
@@ -61,17 +74,11 @@ app.post('', asyncErrorHandler((async (req, res, next) => {
 
 
 app.get('/errors', (req, res) => {
-    let str = fs.readFileSync('./error.json')
-    let err = str.toString()
-    // console.log(strCopy)
+    let str = fs.readFileSync('./error.log')
+    let err = str.toString();
     res.send(err)
-    // res.render('errors', { errors: err })
-
-    //res.send(strCopy)
 });
-// app.get('/errors-log', (req, res) => {
-//     res.render('errors')
-// })
+
 app.use(require('./middleware/globalError'));
 
 app.listen(8080, console.log("Server up and running"));

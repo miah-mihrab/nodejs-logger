@@ -6,7 +6,6 @@ const logger = winston.createLogger({
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
-
         // winston.format.splat(),
         // winston.format.simple()
         // winston.format.prettyPrint()
@@ -15,7 +14,8 @@ const logger = winston.createLogger({
     // defaultMeta: { service: 'user-service' },
 
     transports: [
-        new winston.transports.File({ filename: 'error.json', level: 'error' })
+        new winston.transports.File({ filename: 'error.log', level: 'error', json: true }),
+        new winston.transports.File({ filename: 'warning.log', level: 'warning', json: true })
     ]
 })
 
