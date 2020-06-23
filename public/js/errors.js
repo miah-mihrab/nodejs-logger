@@ -1,4 +1,5 @@
 
+let filterKeys = [];
 function appendError(errors) {
     let i = 0;
     let accordion = document.querySelector('.accordion');
@@ -32,12 +33,13 @@ function appendError(errors) {
                 } else if (err.level === 'info') {
                     color = 'info';
                 } else {
-                    color = 'danger'
+                    color = 'danger';
                 }
 
-                button.innerHTML = `<span class='alert alert-${color}'>level:${err.level}</span>  &nbsp; &nbsp; < time: ${err.timestamp} > &nbsp; &nbsp; < request-from: ${err.requestIP} >`;
+                button.innerHTML = `<span class='alert alert-${color}'>level:${err.level}</span>  &nbsp; &nbsp; 
+                < time: ${err.timestamp} > &nbsp; &nbsp; < request-from: ${err.requestIP} &nbsp;&nbsp; request-method: ${err.method}>`;
             } else {
-                if (keys[i] != 'level' && keys[i] != 'timestamp' && keys[i] != 'requestIP') {
+                if (keys[i] != 'level' && keys[i] != 'timestamp' && keys[i] != 'requestIP' && keys[i] != 'method') {
                     cardBody.innerHTML += `
                     <span><h5 style='display: inline-block'>${keys[i]}: </h5> ${err[keys[i]]}</span><br>`
                 }
@@ -82,19 +84,39 @@ fetch('http://localhost:8080/errors')
 
 // FILTER
 document.querySelector('form').addEventListener('submit', e => {
-
     e.preventDefault();
     let text = document.querySelector('#search_text').value;
     document.querySelector('#search_text').value = '';
-    let errors = [];
-    // console.log(reservedErrors)
-    for (err of reservedErrors) {
-        if (err.toLowerCase().includes(text.toLowerCase().trim()) || err.includes(text.trim())) {
-            errors.push(JSON.parse(err))
-        };
-    }
-    // let errors = reservedErrors.filter(err => err.toLowerCase().includes(text.toLowerCase().trim()) || err.includes(text.trim()));
+    filterErrors(text)
+});
 
-    console.log(errors)
+function filterErrors(text) {
+    // console.log(text)
+    let errors = [];
+    if (filterKeys.includes(text)) {
+        filterKeys.splice(filterKeys.indexOf(text), 1);
+    } else {
+        filterKeys.push(text);
+    }
+
+    if (filterKeys.length > 0) {
+        filterKeys.forEach(e => {
+            for (err of reservedErrors) {
+                if (err.level && e === err.level.toLowerCase()) {
+                    let er = JSON.parse(err);
+                    if (er && er.level != undefined && (er.level.toLowerCase() === text)) errors.push((er))
+                }
+                else if (e != ' ' && err.toLowerCase().includes(e.toLowerCase().trim()) || err.includes(e.trim())) {
+                    errors.push(JSON.parse(err))
+                };
+            }
+
+        })
+    } else {
+        for (err of reservedErrors) {
+            errors.push(JSON.parse(err))
+        }
+    }
+
     appendError(errors);
-})
+}

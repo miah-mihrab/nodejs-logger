@@ -1,10 +1,8 @@
 const fs = require('fs')
-const logger = require('./utils/logger');
 const cors = require('cors')
 const express = require('express');
 const app = express();
 const asyncErrorHandler = require('./utils/asyncErrorHandler');
-const mongoose = require('mongoose');
 const moment = require('moment');
 const handlers = require('./utils/handlers');
 app.use(cors('*'))
@@ -27,7 +25,8 @@ process.on('uncaughtException', (exception) => {
     let err = {};
     err['errorMessage'] = exception.message + "(UncaughtException)";
     err['stackTrace'] = exception.stack;
-    err['timestamp'] = moment().format('MMMM Do YYYY, h:mm:ss a')
+    err['timestamp'] = moment().format('MMMM Do YYYY, h:mm:ss a');
+    err['level'] = 'error';
     if (!fs.existsSync('error.log')) {
         fs.writeFile('error.log');
     }
@@ -42,6 +41,7 @@ process.on('unhandledRejection', (exception) => {
     err['errorMessage'] = exception.message + "(UnhandledRejection)";
     err['stackTrace'] = exception.stack;
     err['timestamp'] = moment().format('MMMM Do YYYY, h:mm:ss a')
+    err['level'] = 'error';
     if (!fs.existsSync('error.log')) {
         fs.writeFile('error.log');
     }
@@ -65,12 +65,16 @@ app.use(express.static("public"));
 // promiseTest.then(() => console.log('done'))
 
 app.get('', (req, res, next) => {
-    handlers({ level: 'warning', errorMessage: 'This is a warning' }, req, res);
-})
+    handlers({ level: 'warning', message: 'This is a warning' }, req, res);
+});
+
+app.get('/info', (req, res, next) => {
+    handlers({ level: 'info', message: 'This is an info' }, req, res);
+});
 
 app.post('', asyncErrorHandler((async (req, res, next) => {
     throw new Error('Error occured')
-})))
+})));
 
 
 app.get('/errors', (req, res) => {
